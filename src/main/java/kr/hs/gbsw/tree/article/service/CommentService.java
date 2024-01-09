@@ -54,20 +54,26 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public Comment updateComment(int id, UpdateCommentDto dto) {
+    public Comment updateComment(int id, User user, UpdateCommentDto dto) {
         // 있어!, 댓글을 일딴 DB에서 조회하자
         Comment original = getComment(id);
-        // 그다음은? 오리지널 비밀번호랑 사용자가 준 비밀번호가 같은지 검사한다.
-        if (original.getPassword().equals(dto.getPassword())) {
-            // 이제야 수정 절차를 진행해도 되긋네.
-            original.setContent(dto.getContent());
-            original.setAuthor(dto.getAuthor());
-            original.setUpdatedAt(LocalDateTime.now());
-            return commentRepository.save(original);
+        if (original.getUser() != null) {
+            if (user == null) {
+                throw new IllegalArgumentException("로그인이 필요합니다.");
+            }
+            if (!original.getUser().getId().equals(user.getId())) {
+                throw new IllegalArgumentException("내 댓글만 수정 가능합니다.");
+            }
+        } else {
+            if (!original.getPassword().equals(dto.getPassword())) {
+                throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+            }
         }
-        // 그럼 여기서 부터는 오류가 생긴 지점이네.
-        // 여기는 비밀번호가 안맞을때
-        throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+        // 이제야 수정 절차를 진행해도 되긋네.
+        original.setContent(dto.getContent());
+        original.setAuthor(dto.getAuthor());
+        original.setUpdatedAt(LocalDateTime.now());
+        return commentRepository.save(original);
     }
 
     public void deleteComment(int id, String password) {

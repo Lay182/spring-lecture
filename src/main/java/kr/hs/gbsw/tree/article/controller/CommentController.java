@@ -39,9 +39,10 @@ public class CommentController {
     @PutMapping("/comments/{id}")
     public Comment updateComment(
             @PathVariable int id,
+            @AuthenticationPrincipal User user,
             @RequestBody UpdateCommentDto dto
     ) {
-        Comment comment = commentService.updateComment(id, dto);
+        Comment comment = commentService.updateComment(id, user, dto);
         return comment;
     }
 
