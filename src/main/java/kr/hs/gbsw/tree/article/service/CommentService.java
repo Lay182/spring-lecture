@@ -6,6 +6,7 @@ import kr.hs.gbsw.tree.article.dto.CreateCommentDto;
 import kr.hs.gbsw.tree.article.dto.UpdateCommentDto;
 import kr.hs.gbsw.tree.article.model.Article;
 import kr.hs.gbsw.tree.article.repository.ArticleRepository;
+import kr.hs.gbsw.tree.user.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class CommentService {
         return commentRepository.findById(id).orElse(null);
     }
 
-    public Comment createComment(int articleId, CreateCommentDto dto) {
+    public Comment createComment(int articleId, User user, CreateCommentDto dto) {
         Article article = articleRepository.findById(articleId).orElse(null);
         if (article == null) {
             throw new IllegalArgumentException("존재하지 않는 게시물입니다.");
@@ -45,6 +46,7 @@ public class CommentService {
                 dto.getContent(),
                 dto.getAuthor(),
                 dto.getPassword(),
+                user,
                 article,
                 now,
                 now
